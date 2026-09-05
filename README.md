@@ -115,9 +115,7 @@ http://localhost:8080
 
 ## Status
 
-🚧 Em desenvolvimento.
-
-O projeto está sendo desenvolvido e novas funcionalidades serão adicionadas futuramente, incluindo a interface gráfica da aplicação web e desktop.
+O projeto está sendo desenvolvido e novas funcionalidades serão adicionadas futuramente, incluindo a interface gráfica da aplicação.
 <p align="center">
   <img src="https://i.pinimg.com/originals/72/0c/c4/720cc43d757ee638ad5054a05220fafe.gif" alt="Demonstração do Yggdrasil">
 </p>
