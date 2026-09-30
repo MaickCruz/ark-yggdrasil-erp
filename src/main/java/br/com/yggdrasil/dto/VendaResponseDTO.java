@@ -22,7 +22,7 @@ public class VendaResponseDTO {
         this.id = venda.getId();
         this.data = venda.getData();
         this.valorTotal = venda.getValorTotal();
-        this.vendedorNome = venda.getVendedor().getNome();
+        this.vendedorNome = venda.getVendedor().getName();
         this.itens = venda.getItens().stream()
                 .map(ItemVendaResponseDTO::new)
                 .collect(Collectors.toList());
