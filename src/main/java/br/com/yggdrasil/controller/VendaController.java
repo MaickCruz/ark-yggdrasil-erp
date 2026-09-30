@@ -3,6 +3,7 @@ package br.com.yggdrasil.controller;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,12 +28,14 @@ public class VendaController {
 		this.vendaService = vendaService;
 	}
 	
+	@PreAuthorize("hasRole('VENDEDOR')")
 	@PostMapping
 	public ResponseEntity<VendaResponseDTO> registrarVenda(@Valid @RequestBody VendaRequestDTO dto) {
 		VendaResponseDTO venda = new VendaResponseDTO(vendaService.registrarVenda(dto));
 		return ResponseEntity.status(HttpStatus.CREATED).body(venda);
 	}
 	
+	@PreAuthorize("hasRole('GERENTE')")
 	@GetMapping("/{id}")
 	public ResponseEntity<VendaResponseDTO> obterVendaPorId(@PathVariable Long id) {
 	    Venda venda = vendaService.obterVendaPorId(id);
@@ -40,6 +43,7 @@ public class VendaController {
 	    return ResponseEntity.ok(dto);
 	}
 	
+	@PreAuthorize("hasRole('GERENTE')")
 	@GetMapping
 	public ResponseEntity<Page<VendaResponseDTO>> obterUltimasVendas(
 	        @RequestParam(defaultValue = "0") int numeroPagina,
