@@ -16,64 +16,113 @@ import br.com.yggdrasil.dto.ErrorResponseDTO;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-	// TODO:
-	// Implementar uma exceção mãe (NaoEncontradoException) para reduzir a reutilização de código das exceções que se repetem.
-	
+    // TODO:
+    // Create a base NotFoundException to reduce duplicated exception handling code.
+
     @ExceptionHandler(ProdutoNaoEncontradoException.class)
-    public ResponseEntity<ErrorResponseDTO> handleProdutoNaoEncontrado(ProdutoNaoEncontradoException e) {
+    public ResponseEntity<ErrorResponseDTO> handleProductNotFound(
+            ProdutoNaoEncontradoException e) {
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponseDTO(HttpStatus.NOT_FOUND.value(), e.getMessage()));
+                .body(new ErrorResponseDTO(
+                        HttpStatus.NOT_FOUND.value(),
+                        e.getMessage()
+                ));
     }
 
-    @ExceptionHandler(UsuarioNaoEncontradoException.class)
-    public ResponseEntity<ErrorResponseDTO> handleUsuarioNaoEncontrado(UsuarioNaoEncontradoException e) {
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleUserNotFound(
+            UserNotFoundException e) {
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponseDTO(HttpStatus.NOT_FOUND.value(), e.getMessage()));
+                .body(new ErrorResponseDTO(
+                        HttpStatus.NOT_FOUND.value(),
+                        e.getMessage()
+                ));
     }
 
     @ExceptionHandler(VendaNaoEncontradaException.class)
-    public ResponseEntity<ErrorResponseDTO> handleVendaNaoEncontrada(VendaNaoEncontradaException e) {
+    public ResponseEntity<ErrorResponseDTO> handleSaleNotFound(
+            VendaNaoEncontradaException e) {
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponseDTO(HttpStatus.NOT_FOUND.value(), e.getMessage()));
+                .body(new ErrorResponseDTO(
+                        HttpStatus.NOT_FOUND.value(),
+                        e.getMessage()
+                ));
     }
 
     @ExceptionHandler(EstoqueInsuficienteException.class)
-    public ResponseEntity<ErrorResponseDTO> handleEstoqueInsuficiente(EstoqueInsuficienteException e) {
+    public ResponseEntity<ErrorResponseDTO> handleInsufficientStock(
+            EstoqueInsuficienteException e) {
+
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ErrorResponseDTO(HttpStatus.CONFLICT.value(), e.getMessage()));
+                .body(new ErrorResponseDTO(
+                        HttpStatus.CONFLICT.value(),
+                        e.getMessage()
+                ));
     }
-    
-    @ExceptionHandler(CredenciaisInvalidasException.class)
-    public ResponseEntity<ErrorResponseDTO> handleCredenciaisInvalidas(CredenciaisInvalidasException e) {
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResponseDTO> handleInvalidCredentials(
+            InvalidCredentialsException e) {
+
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new ErrorResponseDTO(HttpStatus.UNAUTHORIZED.value(), e.getMessage()));
+                .body(new ErrorResponseDTO(
+                        HttpStatus.UNAUTHORIZED.value(),
+                        e.getMessage()
+                ));
     }
-    
+
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErrorResponseDTO> handleAcessoNegado(AccessDeniedException e) {
+    public ResponseEntity<ErrorResponseDTO> handleAccessDenied(
+            AccessDeniedException e) {
+
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(new ErrorResponseDTO(HttpStatus.FORBIDDEN.value(), "Você não tem permissão para executar essa ação"));
+                .body(new ErrorResponseDTO(
+                        HttpStatus.FORBIDDEN.value(),
+                        "You do not have permission to perform this action."
+                ));
     }
-    
-    @ExceptionHandler(TokenInvalidoOuExpiradoException.class)
-    public ResponseEntity<ErrorResponseDTO> handleTokenInvalido(TokenInvalidoOuExpiradoException e) {
+
+    @ExceptionHandler(InvalidOrExpiredTokenException.class)
+    public ResponseEntity<ErrorResponseDTO> handleInvalidOrExpiredToken(
+            InvalidOrExpiredTokenException e) {
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponseDTO(HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+                .body(new ErrorResponseDTO(
+                        HttpStatus.BAD_REQUEST.value(),
+                        e.getMessage()
+                ));
     }
-    
-    @ExceptionHandler(EmailCadastradoException.class)
-    public ResponseEntity<Map<String, String>> handleEmailCadastrado(EmailCadastradoException ex) {
-        Map<String, String> erro = new HashMap<>();
-        erro.put("message", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(erro); // 409, mesmo padrão do EstoqueInsuficiente
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<Map<String, String>> handleEmailAlreadyExists(
+            EmailAlreadyExistsException e) {
+
+        Map<String, String> error = new HashMap<>();
+        error.put("message", e.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(error);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationErrors(MethodArgumentNotValidException e) {
-        Map<String, String> erros = new HashMap<>();
-        for (FieldError erro : e.getBindingResult().getFieldErrors()) {
-            erros.put(erro.getField(), erro.getDefaultMessage());
+    public ResponseEntity<Map<String, String>> handleValidationErrors(
+            MethodArgumentNotValidException e) {
+
+        Map<String, String> errors = new HashMap<>();
+
+        for (FieldError fieldError : e.getBindingResult().getFieldErrors()) {
+            errors.put(
+                    fieldError.getField(),
+                    fieldError.getDefaultMessage()
+            );
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erros);
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(errors);
     }
 }
