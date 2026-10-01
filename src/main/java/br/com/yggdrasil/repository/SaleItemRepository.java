@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import br.com.yggdrasil.dto.ProdutoDashboardDTO;
+import br.com.yggdrasil.dto.ProductDashboardDTO;
 import br.com.yggdrasil.model.entity.SaleItem;
 
 public interface SaleItemRepository extends JpaRepository<SaleItem, Long> {
@@ -21,7 +21,7 @@ public interface SaleItemRepository extends JpaRepository<SaleItem, Long> {
     // to preserve historical accuracy.
 
     @Query("""
-        SELECT new br.com.yggdrasil.dto.ProdutoDashboardDTO(
+        SELECT new br.com.yggdrasil.dto.ProductDashboardDTO(
             p.id,
             p.name,
             SUM(si.quantity),
@@ -36,14 +36,14 @@ public interface SaleItemRepository extends JpaRepository<SaleItem, Long> {
         GROUP BY p.id, p.name
         ORDER BY SUM(si.quantity) DESC
     """)
-    List<ProdutoDashboardDTO> findProdutosMaisVendidos(
+    List<ProductDashboardDTO> findBestSellingProducts(
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end,
             Pageable pageable
     );
 
     @Query("""
-        SELECT new br.com.yggdrasil.dto.ProdutoDashboardDTO(
+        SELECT new br.com.yggdrasil.dto.ProductDashboardDTO(
             p.id,
             p.name,
             SUM(si.quantity),
@@ -58,7 +58,7 @@ public interface SaleItemRepository extends JpaRepository<SaleItem, Long> {
         GROUP BY p.id, p.name
         ORDER BY SUM((si.unitPrice - si.costPrice) * si.quantity) DESC
     """)
-    List<ProdutoDashboardDTO> findProdutosMaisLucrativos(
+    List<ProductDashboardDTO> findMostProfitableProducts(
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end,
             Pageable pageable

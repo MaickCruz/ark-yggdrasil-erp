@@ -7,9 +7,9 @@ import java.util.List;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import br.com.yggdrasil.dto.FaturamentoResponseDTO;
-import br.com.yggdrasil.dto.ProdutoDashboardDTO;
-import br.com.yggdrasil.dto.VendedorDashboardDTO;
+import br.com.yggdrasil.dto.RevenueResponseDTO;
+import br.com.yggdrasil.dto.ProductDashboardDTO;
+import br.com.yggdrasil.dto.SalespersonDashboardDTO;
 import br.com.yggdrasil.model.entity.Product;
 import br.com.yggdrasil.repository.SaleItemRepository;
 import br.com.yggdrasil.repository.ProductRepository;
@@ -18,58 +18,58 @@ import br.com.yggdrasil.repository.SaleRepository;
 @Service
 public class DashboardService {
 
-	private final SaleItemRepository itemVendaRepository;
-	private final SaleRepository vendaRepository;
-	private final ProductRepository produtoRepository;
+	private final SaleItemRepository saleItemRepository;
+	private final SaleRepository saleRepository;
+	private final ProductRepository productRepository;
 
-	public DashboardService(SaleItemRepository itemVendaRepository, ProductRepository produtoRepository, SaleRepository vendaRepository) {
+	public DashboardService(SaleItemRepository saleItemRepository, ProductRepository saleRepository, SaleRepository productRepository) {
 
-		this.itemVendaRepository = itemVendaRepository;
-		this.produtoRepository = produtoRepository;
-		this.vendaRepository = vendaRepository;
+		this.saleItemRepository = saleItemRepository;
+		this.productRepository = saleRepository;
+		this.saleRepository = productRepository;
 	}
 
-	public List<ProdutoDashboardDTO> obterProdutosMaisVendidos(LocalDate inicio, LocalDate fim, int limite) {
+	public List<ProductDashboardDTO> getBestSellingProducts(LocalDate startDate, LocalDate endDate, int limit) {
 
-		LocalDateTime inicioDateTime = inicio.atStartOfDay();
-		LocalDateTime fimDateTime = fim.plusDays(1).atStartOfDay();
+		LocalDateTime startDateTime = startDate.atStartOfDay();
+		LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay();
 
-		return itemVendaRepository.findProdutosMaisVendidos(inicioDateTime, fimDateTime, PageRequest.of(0, limite));
+		return saleItemRepository.findBestSellingProducts(startDateTime, endDateTime, PageRequest.of(0, limit));
 	}
 
-	public List<ProdutoDashboardDTO> obterProdutosMaisLucrativos(LocalDate inicio, LocalDate fim, int limite) {
+	public List<ProductDashboardDTO> getMostProfitableProducts(LocalDate startDate, LocalDate endDate, int limit) {
 
-		LocalDateTime inicioDateTime = inicio.atStartOfDay();
-		LocalDateTime fimDateTime = fim.plusDays(1).atStartOfDay();
+		LocalDateTime startDateTime = startDate.atStartOfDay();
+		LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay();
 
-		return itemVendaRepository.findProdutosMaisLucrativos(inicioDateTime, fimDateTime, PageRequest.of(0, limite));
+		return saleItemRepository.findMostProfitableProducts(startDateTime, endDateTime, PageRequest.of(0, limit));
 	}
 
-	public List<Product> obterProdutosComEstoqueBaixo(Integer estoqueMinimo) {
-		return produtoRepository.findByStockQuantityLessThanOrderByStockQuantityAsc(estoqueMinimo);
-	}
-	
-	public FaturamentoResponseDTO obterFaturamentoTotal() {
-	    return vendaRepository.calcularFaturamentoTotal();
-	}
-
-	public FaturamentoResponseDTO obterFaturamentoUltimos30Dias() {
-	    LocalDateTime inicio = LocalDateTime.now().minusDays(30);
-	    return vendaRepository.calcularFaturamentoDesde(inicio);
+	public List<Product> getLowStockProducts(Integer minStock) {
+		return productRepository.findByStockQuantityLessThanOrderByStockQuantityAsc(minStock);
 	}
 	
-	public List<VendedorDashboardDTO> obterDesempenhoVendedores(
-            LocalDate inicio,
-            LocalDate fim,
-            int limite) {
+	public RevenueResponseDTO getTotalRevenue() {
+	    return saleRepository.calculateTotalRevenue();
+	}
 
-        LocalDateTime inicioDateTime = inicio.atStartOfDay();
-        LocalDateTime fimDateTime = fim.plusDays(1).atStartOfDay();
+	public RevenueResponseDTO getRevenueLast30Days() {
+	    LocalDateTime startDate = LocalDateTime.now().minusDays(30);
+	    return saleRepository.calculateRevenueSince(startDate);
+	}
+	
+	public List<SalespersonDashboardDTO> getSalespersonPerformance(
+            LocalDate startDate,
+            LocalDate endDate,
+            int limit) {
 
-        return vendaRepository.findDesempenhoVendedores(
-                inicioDateTime,
-                fimDateTime,
-                PageRequest.of(0, limite)
+        LocalDateTime startDateTime = startDate.atStartOfDay();
+        LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay();
+
+        return saleRepository.findSalespersonPerformance(
+                startDateTime,
+                endDateTime,
+                PageRequest.of(0, limit)
         );
 	}
 	

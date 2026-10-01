@@ -12,7 +12,4 @@ public class StockRequestDTO {
 	public Integer getQuantity() {
 		return quantity;
 	}
-    
-    
-    
 }

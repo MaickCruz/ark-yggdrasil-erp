@@ -8,35 +8,35 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import br.com.yggdrasil.dto.FaturamentoResponseDTO;
-import br.com.yggdrasil.dto.VendedorDashboardDTO;
+import br.com.yggdrasil.dto.RevenueResponseDTO;
+import br.com.yggdrasil.dto.SalespersonDashboardDTO;
 import br.com.yggdrasil.model.entity.Sale;
 
 public interface SaleRepository extends JpaRepository<Sale, Long> {
 
     @Query("""
-        SELECT new br.com.yggdrasil.dto.FaturamentoResponseDTO(
+        SELECT new br.com.yggdrasil.dto.RevenueResponseDTO(
             SUM(s.totalAmount),
             COUNT(s)
         )
         FROM Sale s
     """)
-    FaturamentoResponseDTO calcularFaturamentoTotal();
+    RevenueResponseDTO calculateTotalRevenue();
 
     @Query("""
-        SELECT new br.com.yggdrasil.dto.FaturamentoResponseDTO(
+        SELECT new br.com.yggdrasil.dto.RevenueResponseDTO(
             SUM(s.totalAmount),
             COUNT(s)
         )
         FROM Sale s
         WHERE s.saleDate >= :start
     """)
-    FaturamentoResponseDTO calcularFaturamentoDesde(
+    RevenueResponseDTO calculateRevenueSince(
             @Param("start") LocalDateTime start
     );
 
     @Query("""
-        SELECT new br.com.yggdrasil.dto.VendedorDashboardDTO(
+        SELECT new br.com.yggdrasil.dto.SalespersonDashboardDTO(
             u.id,
             u.name,
             COUNT(s.id),
@@ -49,7 +49,7 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
         GROUP BY u.id, u.name
         ORDER BY SUM(s.totalAmount) DESC
     """)
-    List<VendedorDashboardDTO> findDesempenhoVendedores(
+    List<SalespersonDashboardDTO> findSalespersonPerformance(
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end,
             Pageable pageable

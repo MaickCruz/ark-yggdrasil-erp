@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.yggdrasil.dto.FaturamentoResponseDTO;
-import br.com.yggdrasil.dto.ProdutoDashboardDTO;
-import br.com.yggdrasil.dto.VendedorDashboardDTO;
+import br.com.yggdrasil.dto.RevenueResponseDTO;
+import br.com.yggdrasil.dto.ProductDashboardDTO;
+import br.com.yggdrasil.dto.SalespersonDashboardDTO;
 import br.com.yggdrasil.model.entity.Product;
 import br.com.yggdrasil.service.DashboardService;
 import jakarta.validation.constraints.Max;
@@ -28,56 +28,57 @@ public class DashboardController {
 		this.dashboardService = dashboardService;
 	}
 
-	@PreAuthorize("hasRole('GERENTE')")
-	@GetMapping("/produtos-mais-vendidos")
-	public ResponseEntity<List<ProdutoDashboardDTO>> obterProdutosMaisVendidos(@RequestParam LocalDate inicio,
-			@RequestParam LocalDate fim, @RequestParam(defaultValue = "10") int limite) {
+	@PreAuthorize("hasRole('MANAGER')")
+	@GetMapping("/best-selling-products")
+	public ResponseEntity<List<ProductDashboardDTO>> getBestSellingProducts(@RequestParam LocalDate startDate,
+			@RequestParam LocalDate endDate, @RequestParam(defaultValue = "10") int limit) {
 
-		return ResponseEntity.ok(dashboardService.obterProdutosMaisVendidos(inicio, fim, limite));
+		return ResponseEntity.ok(dashboardService.getBestSellingProducts(startDate, endDate, limit));
 	}
 
-	@PreAuthorize("hasRole('GERENTE')")
-	@GetMapping("/produtos-mais-lucrativos")
-	public ResponseEntity<List<ProdutoDashboardDTO>> obterProdutosMaisLucrativos(@RequestParam LocalDate inicio,
-			@RequestParam LocalDate fim, @RequestParam(defaultValue = "10") int limite) {
+	@PreAuthorize("hasRole('MANAGER')")
+	@GetMapping("/most-profitable-products")
+	public ResponseEntity<List<ProductDashboardDTO>> getMostProfitableProducts(@RequestParam LocalDate startDate,
+			@RequestParam LocalDate endDate, @RequestParam(defaultValue = "10") int limit) {
 
-		return ResponseEntity.ok(dashboardService.obterProdutosMaisLucrativos(inicio, fim, limite));
+		return ResponseEntity.ok(dashboardService.getMostProfitableProducts(startDate, endDate, limit));
 	}
 
-	@PreAuthorize("hasRole('GERENTE')")
-	@GetMapping("/estoque-baixo")
-	public ResponseEntity<List<Product>> obterProdutosComEstoqueBaixo(
-			@RequestParam(defaultValue = "10") @Min(value = 0, message = "O estoque mínimo não pode ser negativo.") int estoqueMinimo) {
-		return ResponseEntity.ok(dashboardService.obterProdutosComEstoqueBaixo(estoqueMinimo));
+	@PreAuthorize("hasRole('MANAGER')")
+	@GetMapping("/low-stock")
+	public ResponseEntity<List<Product>> getLowStockProducts(
+			@RequestParam(defaultValue = "10") @Min(value = 0, message = "Minimum stock cannot be negative.") int minStock) {
+		return ResponseEntity.ok(dashboardService.getLowStockProducts(minStock));
 	}
 	
-	@PreAuthorize("hasRole('GERENTE')")
-	@GetMapping("/faturamento")
-	public ResponseEntity<FaturamentoResponseDTO> obterFaturamentoTotal() {
-	    return ResponseEntity.ok(dashboardService.obterFaturamentoTotal());
+	@PreAuthorize("hasRole('MANAGER')")
+	@GetMapping("/revenue")
+	public ResponseEntity<RevenueResponseDTO> getTotalRevenue() {
+	    return ResponseEntity.ok(dashboardService.getTotalRevenue());
 	}
 
-	@PreAuthorize("hasRole('GERENTE')")
-	@GetMapping("/faturamento/ultimos-30-dias")
-	public ResponseEntity<FaturamentoResponseDTO> obterFaturamentoUltimos30Dias() {
-	    return ResponseEntity.ok(dashboardService.obterFaturamentoUltimos30Dias());
+	// TODO alterar para pegar o faturamento do ultimo mês ao invés dos ultimos 30 dias
+	@PreAuthorize("hasRole('MANAGER')")
+	@GetMapping("/revenue/last-30-days")
+	public ResponseEntity<RevenueResponseDTO> getRevenueLast30Days() {
+	    return ResponseEntity.ok(dashboardService.getRevenueLast30Days());
 	}
 
-	@PreAuthorize("hasRole('GERENTE')")
-	@GetMapping("/vendedores")
-    public ResponseEntity<List<VendedorDashboardDTO>> obterDesempenhoVendedores(
-            @RequestParam LocalDate inicio,
-            @RequestParam LocalDate fim,
+	@PreAuthorize("hasRole('MANAGER')")
+	@GetMapping("/salespeople")
+    public ResponseEntity<List<SalespersonDashboardDTO>> getSalespersonPerformance(
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate,
             @RequestParam(defaultValue = "10")
             @Min(1)
             @Max(50)
-            int limite) {
+            int limit) {
 
         return ResponseEntity.ok(
-                dashboardService.obterDesempenhoVendedores(
-                        inicio,
-                        fim,
-                        limite
+                dashboardService.getSalespersonPerformance(
+                        startDate,
+                        endDate,
+                        limit
                 )
         );
     }
