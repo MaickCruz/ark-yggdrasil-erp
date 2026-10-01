@@ -15,7 +15,7 @@ public class ItemVendaResponseDTO {
     }
 
     public ItemVendaResponseDTO(ItemVenda itemVenda) {
-        this.produtoNome = itemVenda.getProduto().getNome();
+        this.produtoNome = itemVenda.getProduto().getName();
         this.quantidade = itemVenda.getQuantidade();
         this.precoUnitario = itemVenda.getPrecoUnitario();
         this.subtotal = itemVenda.getPrecoUnitario().multiply(BigDecimal.valueOf(itemVenda.getQuantidade()));

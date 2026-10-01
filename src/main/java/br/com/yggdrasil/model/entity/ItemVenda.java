@@ -40,12 +40,12 @@ public class ItemVenda {
 	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "produto_id", nullable = false)
-	private Produto produto;
+	private Product produto;
 	
 	public ItemVenda() {
 	}
 
-	public ItemVenda(Integer quantidade, BigDecimal precoUnitario, Venda venda, Produto produto, BigDecimal precoCusto) {
+	public ItemVenda(Integer quantidade, BigDecimal precoUnitario, Venda venda, Product produto, BigDecimal precoCusto) {
 		super();
 		this.quantidade = quantidade;
 		this.precoUnitario = precoUnitario;
@@ -94,11 +94,11 @@ public class ItemVenda {
 		this.venda = venda;
 	}
 
-	public Produto getProduto() {
+	public Product getProduto() {
 		return produto;
 	}
 
-	public void setProduto(Produto produto) {
+	public void setProduto(Product produto) {
 		this.produto = produto;
 	}
 	

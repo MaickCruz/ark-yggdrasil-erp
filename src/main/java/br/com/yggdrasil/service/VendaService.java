@@ -10,15 +10,15 @@ import org.springframework.stereotype.Service;
 import br.com.yggdrasil.dto.ItemVendaRequestDTO;
 import br.com.yggdrasil.dto.VendaRequestDTO;
 import br.com.yggdrasil.exception.EstoqueInsuficienteException;
-import br.com.yggdrasil.exception.ProdutoNaoEncontradoException;
-import br.com.yggdrasil.exception.UsuarioNaoEncontradoException;
+import br.com.yggdrasil.exception.ProductNotFoundException;
+import br.com.yggdrasil.exception.UserNotFoundException;
 import br.com.yggdrasil.exception.VendaNaoEncontradaException;
 import br.com.yggdrasil.model.entity.ItemVenda;
-import br.com.yggdrasil.model.entity.Produto;
-import br.com.yggdrasil.model.entity.Usuario;
+import br.com.yggdrasil.model.entity.Product;
+import br.com.yggdrasil.model.entity.User;
 import br.com.yggdrasil.model.entity.Venda;
-import br.com.yggdrasil.repository.ProdutoRepository;
-import br.com.yggdrasil.repository.UsuarioRepository;
+import br.com.yggdrasil.repository.ProductRepository;
+import br.com.yggdrasil.repository.UserRepository;
 import br.com.yggdrasil.repository.VendaRepository;
 import jakarta.transaction.Transactional;
 
@@ -26,11 +26,11 @@ import jakarta.transaction.Transactional;
 public class VendaService {
 
 	private final VendaRepository vendaRepository;
-	private final UsuarioRepository usuarioRepository;
-	private final ProdutoRepository produtoRepository;
+	private final UserRepository usuarioRepository;
+	private final ProductRepository produtoRepository;
 
-	public VendaService(VendaRepository vendaRepository, UsuarioRepository usuarioRepository,
-			ProdutoRepository produtoRepository) {
+	public VendaService(VendaRepository vendaRepository, UserRepository usuarioRepository,
+			ProductRepository produtoRepository) {
 		this.vendaRepository = vendaRepository;
 		this.usuarioRepository = usuarioRepository;
 		this.produtoRepository = produtoRepository;
@@ -38,8 +38,8 @@ public class VendaService {
 
 	@Transactional
 	public Venda registrarVenda(VendaRequestDTO dto) {
-		Usuario vendedor = usuarioRepository.findById(dto.getVendedorId())
-                .orElseThrow(() -> new UsuarioNaoEncontradoException(dto.getVendedorId()));
+		User vendedor = usuarioRepository.findById(dto.getVendedorId())
+                .orElseThrow(() -> new UserNotFoundException(dto.getVendedorId()));
 		
 		Venda venda = new Venda();
 		venda.setVendedor(vendedor);
@@ -47,25 +47,25 @@ public class VendaService {
 		BigDecimal valorTotal = BigDecimal.ZERO;
 		
 		for(ItemVendaRequestDTO itemDto: dto.getItens()) {
-			Produto produto = produtoRepository.findById(itemDto.getProdutoId())
-					.orElseThrow(() -> new ProdutoNaoEncontradoException(itemDto.getProdutoId()));
+			Product produto = produtoRepository.findById(itemDto.getProdutoId())
+					.orElseThrow(() -> new ProductNotFoundException(itemDto.getProdutoId()));
 			
-			if(produto.getQuantidadeEstoque() < itemDto.getQuantidade()) {
-				throw new EstoqueInsuficienteException(produto.getNome(), produto.getQuantidadeEstoque(), itemDto.getQuantidade());
+			if(produto.getStockQuantity() < itemDto.getQuantidade()) {
+				throw new EstoqueInsuficienteException(produto.getName(), produto.getStockQuantity(), itemDto.getQuantidade());
 			}
 			
-			produto.setQuantidadeEstoque(produto.getQuantidadeEstoque() - itemDto.getQuantidade());
+			produto.setStockQuantity(produto.getStockQuantity() - itemDto.getQuantidade());
 			
 			ItemVenda item = new ItemVenda(); 
 			item.setQuantidade(itemDto.getQuantidade());
-			item.setPrecoUnitario(produto.getPrecoVenda());
-			item.setPrecoCusto(produto.getPrecoCusto());
+			item.setPrecoUnitario(produto.getSalePrice());
+			item.setPrecoCusto(produto.getCostPrice());
 			item.setProduto(produto);
 			item.setVenda(venda);
 			
 			venda.getItens().add(item);
 			
-			BigDecimal subtotal = produto.getPrecoVenda().multiply(BigDecimal.valueOf(itemDto.getQuantidade()));
+			BigDecimal subtotal = produto.getSalePrice().multiply(BigDecimal.valueOf(itemDto.getQuantidade()));
 			valorTotal = valorTotal.add(subtotal);
 			
 		}

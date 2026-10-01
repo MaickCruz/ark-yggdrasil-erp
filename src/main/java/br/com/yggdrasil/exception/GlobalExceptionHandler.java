@@ -19,9 +19,9 @@ public class GlobalExceptionHandler {
     // TODO:
     // Create a base NotFoundException to reduce duplicated exception handling code.
 
-    @ExceptionHandler(ProdutoNaoEncontradoException.class)
+    @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleProductNotFound(
-            ProdutoNaoEncontradoException e) {
+            ProductNotFoundException e) {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErrorResponseDTO(

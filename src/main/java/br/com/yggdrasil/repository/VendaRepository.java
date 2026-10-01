@@ -23,7 +23,7 @@ public interface VendaRepository extends JpaRepository<Venda, Long> {
     @Query("""
             SELECT new br.com.yggdrasil.dto.VendedorDashboardDTO(
                 u.id,
-                u.nome,
+                u.name,
                 COUNT(v.id),
                 SUM(v.valorTotal)
             )
@@ -31,7 +31,7 @@ public interface VendaRepository extends JpaRepository<Venda, Long> {
             JOIN v.vendedor u
             WHERE v.data >= :inicio
               AND v.data < :fim
-            GROUP BY u.id, u.nome
+            GROUP BY u.id, u.name
             ORDER BY SUM(v.valorTotal) DESC
         """)
         List<VendedorDashboardDTO> findDesempenhoVendedores(

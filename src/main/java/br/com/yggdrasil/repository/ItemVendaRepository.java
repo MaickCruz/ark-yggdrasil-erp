@@ -22,7 +22,7 @@ public interface ItemVendaRepository extends JpaRepository<ItemVenda, Long> {
 	@Query("""
 			    SELECT new br.com.yggdrasil.dto.ProdutoDashboardDTO(
 			        p.id,
-			        p.nome,
+			        p.name,
 			        SUM(iv.quantidade),
 			        SUM(iv.precoUnitario * iv.quantidade),
 			        SUM((iv.precoUnitario - iv.precoCusto) * iv.quantidade)
@@ -32,7 +32,7 @@ public interface ItemVendaRepository extends JpaRepository<ItemVenda, Long> {
 			    JOIN iv.venda v
 			    WHERE v.data >= :inicio
 			      AND v.data < :fim
-			    GROUP BY p.id, p.nome
+			    GROUP BY p.id, p.name
 			    ORDER BY SUM(iv.quantidade) DESC
 			""")
 	List<ProdutoDashboardDTO> findProdutosMaisVendidos(LocalDateTime inicio, LocalDateTime fim, Pageable pageable);
@@ -40,7 +40,7 @@ public interface ItemVendaRepository extends JpaRepository<ItemVenda, Long> {
 	@Query("""
 			    SELECT new br.com.yggdrasil.dto.ProdutoDashboardDTO(
 			        p.id,
-			        p.nome,
+			        p.name,
 			        SUM(iv.quantidade),
 			        SUM(iv.precoUnitario * iv.quantidade),
 			        SUM((iv.precoUnitario - iv.precoCusto) * iv.quantidade)
@@ -50,7 +50,7 @@ public interface ItemVendaRepository extends JpaRepository<ItemVenda, Long> {
 			    JOIN iv.venda v
 			    WHERE v.data >= :inicio
 			      AND v.data < :fim
-			    GROUP BY p.id, p.nome
+			    GROUP BY p.id, p.name
 			    ORDER BY SUM((iv.precoUnitario - iv.precoCusto) * iv.quantidade) DESC
 			""")
 	List<ProdutoDashboardDTO> findProdutosMaisLucrativos(LocalDateTime inicio, LocalDateTime fim, Pageable pageable);

@@ -37,12 +37,12 @@ public class Venda {
 	@NotNull(message = "A venda precisa de um vendedor.")
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "vendedor_id", nullable = false)
-	private Usuario vendedor;
+	private User vendedor;
 
 	public Venda() {
 	}
 
-	public Venda(BigDecimal valorTotal, Usuario vendedor) {
+	public Venda(BigDecimal valorTotal, User vendedor) {
 		super();
 		this.valorTotal = valorTotal;
 		this.vendedor = vendedor;
@@ -79,11 +79,11 @@ public class Venda {
 		this.valorTotal = valorTotal;
 	}
 
-	public Usuario getVendedor() {
+	public User getVendedor() {
 		return vendedor;
 	}
 
-	public void setVendedor(Usuario vendedor) {
+	public void setVendedor(User vendedor) {
 		this.vendedor = vendedor;
 	}
 

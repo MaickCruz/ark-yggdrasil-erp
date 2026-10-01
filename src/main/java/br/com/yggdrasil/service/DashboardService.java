@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service;
 import br.com.yggdrasil.dto.FaturamentoResponseDTO;
 import br.com.yggdrasil.dto.ProdutoDashboardDTO;
 import br.com.yggdrasil.dto.VendedorDashboardDTO;
-import br.com.yggdrasil.model.entity.Produto;
+import br.com.yggdrasil.model.entity.Product;
 import br.com.yggdrasil.repository.ItemVendaRepository;
-import br.com.yggdrasil.repository.ProdutoRepository;
+import br.com.yggdrasil.repository.ProductRepository;
 import br.com.yggdrasil.repository.VendaRepository;
 
 @Service
@@ -20,9 +20,9 @@ public class DashboardService {
 
 	private final ItemVendaRepository itemVendaRepository;
 	private final VendaRepository vendaRepository;
-	private final ProdutoRepository produtoRepository;
+	private final ProductRepository produtoRepository;
 
-	public DashboardService(ItemVendaRepository itemVendaRepository, ProdutoRepository produtoRepository, VendaRepository vendaRepository) {
+	public DashboardService(ItemVendaRepository itemVendaRepository, ProductRepository produtoRepository, VendaRepository vendaRepository) {
 
 		this.itemVendaRepository = itemVendaRepository;
 		this.produtoRepository = produtoRepository;
@@ -45,8 +45,8 @@ public class DashboardService {
 		return itemVendaRepository.findProdutosMaisLucrativos(inicioDateTime, fimDateTime, PageRequest.of(0, limite));
 	}
 
-	public List<Produto> obterProdutosComEstoqueBaixo(Integer estoqueMinimo) {
-		return produtoRepository.findByQuantidadeEstoqueLessThanOrderByQuantidadeEstoqueAsc(estoqueMinimo);
+	public List<Product> obterProdutosComEstoqueBaixo(Integer estoqueMinimo) {
+		return produtoRepository.findByStockQuantityLessThanOrderByStockQuantityAsc(estoqueMinimo);
 	}
 	
 	public FaturamentoResponseDTO obterFaturamentoTotal() {

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.yggdrasil.dto.FaturamentoResponseDTO;
 import br.com.yggdrasil.dto.ProdutoDashboardDTO;
 import br.com.yggdrasil.dto.VendedorDashboardDTO;
-import br.com.yggdrasil.model.entity.Produto;
+import br.com.yggdrasil.model.entity.Product;
 import br.com.yggdrasil.service.DashboardService;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -46,7 +46,7 @@ public class DashboardController {
 
 	@PreAuthorize("hasRole('GERENTE')")
 	@GetMapping("/estoque-baixo")
-	public ResponseEntity<List<Produto>> obterProdutosComEstoqueBaixo(
+	public ResponseEntity<List<Product>> obterProdutosComEstoqueBaixo(
 			@RequestParam(defaultValue = "10") @Min(value = 0, message = "O estoque mínimo não pode ser negativo.") int estoqueMinimo) {
 		return ResponseEntity.ok(dashboardService.obterProdutosComEstoqueBaixo(estoqueMinimo));
 	}
