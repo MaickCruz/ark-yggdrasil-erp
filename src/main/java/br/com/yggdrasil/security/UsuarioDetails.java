@@ -7,26 +7,26 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import br.com.yggdrasil.model.entity.Usuario;
-import br.com.yggdrasil.model.enums.TipoUsuario;
+import br.com.yggdrasil.model.entity.User;
+import br.com.yggdrasil.model.enums.UserRole;
 
 @SuppressWarnings("serial")
 public class UsuarioDetails implements UserDetails {
 
-    private final Usuario usuario;
+    private final User usuario;
 
-    public UsuarioDetails(Usuario usuario) {
+    public UsuarioDetails(User usuario) {
         this.usuario = usuario;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if(usuario.getTipo() == TipoUsuario.ADMINISTRADOR) {
+        if(usuario.getRole() == UserRole.ADMIN) {
         	return List.of(
         			new SimpleGrantedAuthority("ROLE_ADMINISTRADOR"),
                     new SimpleGrantedAuthority("ROLE_GERENTE"),
                     new SimpleGrantedAuthority("ROLE_VENDEDOR"));
-        } else if (usuario.getTipo() == TipoUsuario.GERENTE) {
+        } else if (usuario.getRole() == UserRole.MANAGER) {
             return List.of(
                     new SimpleGrantedAuthority("ROLE_GERENTE"),
                     new SimpleGrantedAuthority("ROLE_VENDEDOR"));
@@ -36,7 +36,7 @@ public class UsuarioDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return usuario.getSenha();
+        return usuario.getPassword();
     }
 
     @Override
@@ -56,7 +56,7 @@ public class UsuarioDetails implements UserDetails {
     @Override
     public boolean isEnabled() { return true; }
 
-    public Usuario getUsuario() {
+    public User getUsuario() {
         return usuario;
     }
 }

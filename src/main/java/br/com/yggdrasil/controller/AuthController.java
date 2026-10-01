@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.yggdrasil.dto.DefinirSenhaRequestDTO;
+import br.com.yggdrasil.dto.SetPasswordRequestDTO;
 import br.com.yggdrasil.dto.LoginRequestDTO;
-import br.com.yggdrasil.dto.UserMeResponseDto;
-import br.com.yggdrasil.model.entity.Usuario;
+import br.com.yggdrasil.dto.CurrentUserResponseDTO;
+import br.com.yggdrasil.model.entity.User;
 import br.com.yggdrasil.security.UsuarioDetails;
 import br.com.yggdrasil.service.AuthService;
-import br.com.yggdrasil.service.UsuarioService;
+import br.com.yggdrasil.service.UserService;
 import jakarta.validation.Valid;
 
 @RestController
@@ -23,9 +23,9 @@ import jakarta.validation.Valid;
 public class AuthController {
 
     private final AuthService authService;
-    private final UsuarioService usuarioService;
+    private final UserService usuarioService;
 
-    public AuthController(AuthService authService, UsuarioService usuarioService) {
+    public AuthController(AuthService authService, UserService usuarioService) {
         this.authService = authService;
         this.usuarioService = usuarioService;
     }
@@ -66,19 +66,19 @@ public class AuthController {
 
     @PostMapping("/definir-senha")
     public ResponseEntity<Void> definirSenha(
-            @Valid @RequestBody DefinirSenhaRequestDTO dto) {
+            @Valid @RequestBody SetPasswordRequestDTO dto) {
 
-        usuarioService.definirSenha(dto.getToken(), dto.getNovaSenha());
+        usuarioService.setPassword(dto.getToken(), dto.getNewPassword());
 
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserMeResponseDto> me(Authentication authentication) {
+    public ResponseEntity<CurrentUserResponseDTO> me(Authentication authentication) {
     	UsuarioDetails userDetails = (UsuarioDetails) authentication.getPrincipal();
-    	Usuario usuario = userDetails.getUsuario();
+    	User usuario = userDetails.getUsuario();
     	
-    	UserMeResponseDto response = new UserMeResponseDto(usuario);
+    	CurrentUserResponseDTO response = new CurrentUserResponseDTO(usuario);
     	return ResponseEntity.ok(response);
     }
 }

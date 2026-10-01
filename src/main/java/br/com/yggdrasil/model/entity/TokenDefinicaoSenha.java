@@ -25,7 +25,7 @@ public class TokenDefinicaoSenha {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario;
+    private User usuario;
 
     @Column(name = "data_expiracao", nullable = false)
     private LocalDateTime dataExpiracao;
@@ -52,11 +52,11 @@ public class TokenDefinicaoSenha {
 		this.token = token;
 	}
 
-	public Usuario getUsuario() {
+	public User getUsuario() {
 		return usuario;
 	}
 
-	public void setUsuario(Usuario usuario) {
+	public void setUsuario(User usuario) {
 		this.usuario = usuario;
 	}
 
