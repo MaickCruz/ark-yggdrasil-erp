@@ -11,18 +11,18 @@ import br.com.yggdrasil.dto.FaturamentoResponseDTO;
 import br.com.yggdrasil.dto.ProdutoDashboardDTO;
 import br.com.yggdrasil.dto.VendedorDashboardDTO;
 import br.com.yggdrasil.model.entity.Product;
-import br.com.yggdrasil.repository.ItemVendaRepository;
+import br.com.yggdrasil.repository.SaleItemRepository;
 import br.com.yggdrasil.repository.ProductRepository;
-import br.com.yggdrasil.repository.VendaRepository;
+import br.com.yggdrasil.repository.SaleRepository;
 
 @Service
 public class DashboardService {
 
-	private final ItemVendaRepository itemVendaRepository;
-	private final VendaRepository vendaRepository;
+	private final SaleItemRepository itemVendaRepository;
+	private final SaleRepository vendaRepository;
 	private final ProductRepository produtoRepository;
 
-	public DashboardService(ItemVendaRepository itemVendaRepository, ProductRepository produtoRepository, VendaRepository vendaRepository) {
+	public DashboardService(SaleItemRepository itemVendaRepository, ProductRepository produtoRepository, SaleRepository vendaRepository) {
 
 		this.itemVendaRepository = itemVendaRepository;
 		this.produtoRepository = produtoRepository;

@@ -41,9 +41,9 @@ public class GlobalExceptionHandler {
                 ));
     }
 
-    @ExceptionHandler(VendaNaoEncontradaException.class)
+    @ExceptionHandler(SaleNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleSaleNotFound(
-            VendaNaoEncontradaException e) {
+            SaleNotFoundException e) {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErrorResponseDTO(
@@ -52,9 +52,9 @@ public class GlobalExceptionHandler {
                 ));
     }
 
-    @ExceptionHandler(EstoqueInsuficienteException.class)
+    @ExceptionHandler(InsufficientStockException.class)
     public ResponseEntity<ErrorResponseDTO> handleInsufficientStock(
-            EstoqueInsuficienteException e) {
+            InsufficientStockException e) {
 
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(new ErrorResponseDTO(
