@@ -24,33 +24,33 @@ public class JwtService {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    public String gerarToken(String email) {
-        Date agora = new Date();
-        Date expiracao = new Date(agora.getTime() + EXPIRATION_MS);
+    public String generateToken(String email) {
+        Date now = new Date();
+        Date expiration = new Date(now.getTime() + EXPIRATION_MS);
 
         return Jwts.builder()
                 .subject(email)
-                .issuedAt(agora)
-                .expiration(expiracao)
+                .issuedAt(now)
+                .expiration(expiration)
                 .signWith(getSigningKey())
                 .compact();
     }
 
-    public String extrairEmail(String token) {
-        return extrairClaim(token, Claims::getSubject);
+    public String extractEmail(String token) {
+        return extractClaim(token, Claims::getSubject);
     }
 
-    public boolean isTokenValido(String token, String email) {
-        String emailDoToken = extrairEmail(token);
-        return emailDoToken.equals(email) && !isTokenExpirado(token);
+    public boolean isTokenValid(String token, String email) {
+        String tokenEmail = extractEmail(token);
+        return tokenEmail.equals(email) && !isTokenExpired(token);
     }
 
-    private boolean isTokenExpirado(String token) {
-        Date expiracao = extrairClaim(token, Claims::getExpiration);
-        return expiracao.before(new Date());
+    private boolean isTokenExpired(String token) {
+        Date expiration = extractClaim(token, Claims::getExpiration);
+        return expiration.before(new Date());
     }
 
-    private <T> T extrairClaim(String token, Function<Claims, T> resolver) {
+    private <T> T extractClaim(String token, Function<Claims, T> resolver) {
         Claims claims = Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()

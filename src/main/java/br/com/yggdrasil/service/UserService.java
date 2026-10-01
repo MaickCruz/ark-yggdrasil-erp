@@ -67,7 +67,7 @@ public class UserService {
         tokenRepository.save(tokenEntity);
 
         String setupPasswordUrl =
-                "http://localhost:8080/auth/definir-senha?token=" + token;
+                "http://localhost:8080/auth/set-password?token=" + token;
 
         emailService.enviarEmailDefinicaoSenha(
                 user.getEmail(),

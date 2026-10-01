@@ -13,7 +13,7 @@ import br.com.yggdrasil.dto.SetPasswordRequestDTO;
 import br.com.yggdrasil.dto.LoginRequestDTO;
 import br.com.yggdrasil.dto.CurrentUserResponseDTO;
 import br.com.yggdrasil.model.entity.User;
-import br.com.yggdrasil.security.UsuarioDetails;
+import br.com.yggdrasil.security.CustomUserDetails;
 import br.com.yggdrasil.service.AuthService;
 import br.com.yggdrasil.service.UserService;
 import jakarta.validation.Valid;
@@ -23,11 +23,11 @@ import jakarta.validation.Valid;
 public class AuthController {
 
     private final AuthService authService;
-    private final UserService usuarioService;
+    private final UserService userService;
 
-    public AuthController(AuthService authService, UserService usuarioService) {
+    public AuthController(AuthService authService, UserService userService) {
         this.authService = authService;
-        this.usuarioService = usuarioService;
+        this.userService = userService;
     }
 
     @PostMapping("/login")
@@ -64,21 +64,21 @@ public class AuthController {
                 .build();
     }
 
-    @PostMapping("/definir-senha")
-    public ResponseEntity<Void> definirSenha(
+    @PostMapping("/set-password")
+    public ResponseEntity<Void> setPassword(
             @Valid @RequestBody SetPasswordRequestDTO dto) {
 
-        usuarioService.setPassword(dto.getToken(), dto.getNewPassword());
+        userService.setPassword(dto.getToken(), dto.getNewPassword());
 
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/me")
     public ResponseEntity<CurrentUserResponseDTO> me(Authentication authentication) {
-    	UsuarioDetails userDetails = (UsuarioDetails) authentication.getPrincipal();
-    	User usuario = userDetails.getUsuario();
+    	CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+    	User user = userDetails.getUser();
     	
-    	CurrentUserResponseDTO response = new CurrentUserResponseDTO(usuario);
+    	CurrentUserResponseDTO response = new CurrentUserResponseDTO(user);
     	return ResponseEntity.ok(response);
     }
 }

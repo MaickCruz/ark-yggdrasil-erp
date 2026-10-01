@@ -8,18 +8,18 @@ import org.springframework.stereotype.Service;
 import br.com.yggdrasil.repository.UserRepository;
 
 @Service
-public class UsuarioDetailsService implements UserDetailsService {
+public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserRepository usuarioRepository;
+    private final UserRepository userRepository;
 
-    public UsuarioDetailsService(UserRepository usuarioRepository) {
-        this.usuarioRepository = usuarioRepository;
+    public CustomUserDetailsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return usuarioRepository.findByEmail(email)
-                .map(UsuarioDetails::new)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + email));
+        return userRepository.findByEmail(email)
+                .map(CustomUserDetails::new)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
     }
 }

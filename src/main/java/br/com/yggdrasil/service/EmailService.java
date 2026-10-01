@@ -27,7 +27,7 @@ public class EmailService {
         context.setVariable("nome", nome);
         context.setVariable("link", link);
 
-        String html = templateEngine.process("email/definir-senha", context);
+        String html = templateEngine.process("email/set-password", context);
 
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();

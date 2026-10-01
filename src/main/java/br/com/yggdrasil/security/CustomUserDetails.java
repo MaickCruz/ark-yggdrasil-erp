@@ -10,38 +10,38 @@ import org.springframework.security.core.userdetails.UserDetails;
 import br.com.yggdrasil.model.entity.User;
 import br.com.yggdrasil.model.enums.UserRole;
 
-@SuppressWarnings("serial")
-public class UsuarioDetails implements UserDetails {
+public class CustomUserDetails implements UserDetails {
 
-    private final User usuario;
+	private static final long serialVersionUID = -1580255196750491830L;
+	private final User user;
 
-    public UsuarioDetails(User usuario) {
-        this.usuario = usuario;
+    public CustomUserDetails(User user) {
+        this.user = user;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if(usuario.getRole() == UserRole.ADMIN) {
+        if(user.getRole() == UserRole.ADMIN) {
         	return List.of(
-        			new SimpleGrantedAuthority("ROLE_ADMINISTRADOR"),
-                    new SimpleGrantedAuthority("ROLE_GERENTE"),
-                    new SimpleGrantedAuthority("ROLE_VENDEDOR"));
-        } else if (usuario.getRole() == UserRole.MANAGER) {
+        			new SimpleGrantedAuthority("ROLE_ADMIN"),
+                    new SimpleGrantedAuthority("ROLE_MANAGER"),
+                    new SimpleGrantedAuthority("ROLE_SALESPERSON"));
+        } else if (user.getRole() == UserRole.MANAGER) {
             return List.of(
-                    new SimpleGrantedAuthority("ROLE_GERENTE"),
-                    new SimpleGrantedAuthority("ROLE_VENDEDOR"));
+                    new SimpleGrantedAuthority("ROLE_MANAGER"),
+                    new SimpleGrantedAuthority("ROLE_SALESPERSON"));
         }
-        return List.of(new SimpleGrantedAuthority("ROLE_VENDEDOR"));
+        return List.of(new SimpleGrantedAuthority("ROLE_SALESPERSON"));
     }
 
     @Override
     public String getPassword() {
-        return usuario.getPassword();
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return usuario.getEmail();
+        return user.getEmail();
     }
 
     @Override
@@ -56,7 +56,7 @@ public class UsuarioDetails implements UserDetails {
     @Override
     public boolean isEnabled() { return true; }
 
-    public User getUsuario() {
-        return usuario;
+    public User getUser() {
+        return user;
     }
 }

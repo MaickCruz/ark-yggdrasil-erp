@@ -20,14 +20,14 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private final UsuarioDetailsService usuarioDetailsService;
+    private final CustomUserDetailsService userDetailsService;
 
     public JwtAuthenticationFilter(
             JwtService jwtService,
-            UsuarioDetailsService usuarioDetailsService) {
+            CustomUserDetailsService userDetailsService) {
 
         this.jwtService = jwtService;
-        this.usuarioDetailsService = usuarioDetailsService;
+        this.userDetailsService = userDetailsService;
     }
 
     @Override
@@ -58,15 +58,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
 
-            String email = jwtService.extrairEmail(token);
+            String email = jwtService.extractEmail(token);
 
             if (email != null &&
                     SecurityContextHolder.getContext().getAuthentication() == null) {
 
                 UserDetails userDetails =
-                        usuarioDetailsService.loadUserByUsername(email);
+                        userDetailsService.loadUserByUsername(email);
 
-                if (jwtService.isTokenValido(
+                if (jwtService.isTokenValid(
                         token,
                         userDetails.getUsername())) {
 

@@ -12,27 +12,27 @@ import br.com.yggdrasil.security.JwtService;
 @Service
 public class AuthService {
 
-	private final UserRepository usuarioRepository;
+	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final JwtService jwtService;
 	
-	public AuthService(UserRepository usuarioRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+	public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
 		super();
-		this.usuarioRepository = usuarioRepository;
+		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.jwtService = jwtService;
 	}
 	
 	public String login(LoginRequestDTO dto) {
 		
-		User usuario = usuarioRepository.findByEmail(dto.getEmail())
+		User user = userRepository.findByEmail(dto.getEmail())
 			.orElseThrow(() -> new InvalidCredentialsException());
 		
-	    if (!passwordEncoder.matches(dto.getPassword(), usuario.getPassword())) {
+	    if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
 	        throw new InvalidCredentialsException();
 	    }
 
-	    return jwtService.gerarToken(usuario.getEmail());
+	    return jwtService.generateToken(user.getEmail());
 	}
 	
 	
