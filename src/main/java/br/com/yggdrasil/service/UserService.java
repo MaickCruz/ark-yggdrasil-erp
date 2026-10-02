@@ -3,6 +3,7 @@ package br.com.yggdrasil.service;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,9 @@ public class UserService {
         this.tokenRepository = tokenRepository;
         this.emailService = emailService;
     }
+    
+    @Value("${app.base-url}")
+    private String baseUrl;
 
     public User createUser(User user) {
 
@@ -67,7 +71,7 @@ public class UserService {
         tokenRepository.save(tokenEntity);
 
         String setupPasswordUrl =
-                "http://localhost:8080/auth/set-password?token=" + token;
+                baseUrl + "/auth/set-password?token=" + token;
 
         emailService.sendPasswordSetupEmail(
                 user.getEmail(),
