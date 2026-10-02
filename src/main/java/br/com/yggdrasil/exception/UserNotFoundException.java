@@ -1,6 +1,6 @@
 package br.com.yggdrasil.exception;
 
-public class UserNotFoundException extends RuntimeException {
+public class UserNotFoundException extends NotFoundException {
 
     private static final long serialVersionUID = 8150982916675560184L;
 
