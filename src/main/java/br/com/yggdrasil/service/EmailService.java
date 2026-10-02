@@ -22,9 +22,9 @@ public class EmailService {
         this.templateEngine = templateEngine;
     }
 
-    public void enviarEmailDefinicaoSenha(String destinatario, String nome, String link) {
+    public void sendPasswordSetupEmail(String recipient, String name, String link) {
         Context context = new Context();
-        context.setVariable("nome", nome);
+        context.setVariable("nome", name);
         context.setVariable("link", link);
 
         String html = templateEngine.process("email/set-password", context);
@@ -32,12 +32,12 @@ public class EmailService {
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, StandardCharsets.UTF_8.name());
-            helper.setTo(destinatario);
-            helper.setSubject("Yggdrasil - Defina sua senha");
+            helper.setTo(recipient);
+            helper.setSubject("Yggdrasil - Set your password");
             helper.setText(html, true);
             mailSender.send(mimeMessage);
         } catch (MessagingException e) {
-            throw new RuntimeException("Erro ao enviar e-mail", e);
+            throw new RuntimeException("Error sending email.", e);
         }
     }
 }

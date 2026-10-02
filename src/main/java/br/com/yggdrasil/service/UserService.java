@@ -12,23 +12,23 @@ import br.com.yggdrasil.exception.InvalidCredentialsException;
 import br.com.yggdrasil.exception.EmailAlreadyExistsException;
 import br.com.yggdrasil.exception.InvalidOrExpiredTokenException;
 import br.com.yggdrasil.exception.UserNotFoundException;
-import br.com.yggdrasil.model.entity.TokenDefinicaoSenha;
+import br.com.yggdrasil.model.entity.PasswordSetupToken;
 import br.com.yggdrasil.model.entity.User;
-import br.com.yggdrasil.repository.TokenDefinicaoSenhaRepository;
+import br.com.yggdrasil.repository.PasswordSetupTokenRepository;
 import br.com.yggdrasil.repository.UserRepository;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
-    private final TokenDefinicaoSenhaRepository tokenRepository;
+    private final PasswordSetupTokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
 
     public UserService(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
-            TokenDefinicaoSenhaRepository tokenRepository,
+            PasswordSetupTokenRepository tokenRepository,
             EmailService emailService) {
 
         this.userRepository = userRepository;
@@ -58,18 +58,18 @@ public class UserService {
 
         String token = UUID.randomUUID().toString();
 
-        TokenDefinicaoSenha tokenEntity = new TokenDefinicaoSenha();
+        PasswordSetupToken tokenEntity = new PasswordSetupToken();
 
         tokenEntity.setToken(token);
-        tokenEntity.setUsuario(user);
-        tokenEntity.setDataExpiracao(LocalDateTime.now().plusHours(24));
+        tokenEntity.setUser(user);
+        tokenEntity.setExpirationDate(LocalDateTime.now().plusHours(24));
 
         tokenRepository.save(tokenEntity);
 
         String setupPasswordUrl =
                 "http://localhost:8080/auth/set-password?token=" + token;
 
-        emailService.enviarEmailDefinicaoSenha(
+        emailService.sendPasswordSetupEmail(
                 user.getEmail(),
                 user.getName(),
                 setupPasswordUrl
@@ -78,22 +78,22 @@ public class UserService {
 
     public void setPassword(String token, String newPassword) {
 
-        TokenDefinicaoSenha tokenEntity = tokenRepository.findByToken(token)
+        PasswordSetupToken tokenEntity = tokenRepository.findByToken(token)
                 .orElseThrow(InvalidOrExpiredTokenException::new);
 
-        if (tokenEntity.isUsado()
-                || tokenEntity.getDataExpiracao().isBefore(LocalDateTime.now())) {
+        if (tokenEntity.isUsed()
+                || tokenEntity.getExpirationDate().isBefore(LocalDateTime.now())) {
 
             throw new InvalidOrExpiredTokenException();
         }
 
-        User user = tokenEntity.getUsuario();
+        User user = tokenEntity.getUser();
 
         user.setPassword(passwordEncoder.encode(newPassword));
 
         userRepository.save(user);
 
-        tokenEntity.setUsado(true);
+        tokenEntity.setUsed(true);
         tokenRepository.save(tokenEntity);
     }
 

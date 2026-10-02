@@ -13,8 +13,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "token_definicao_senha")
-public class TokenDefinicaoSenha {
+@Table(name = "password_setup_tokens")
+public class PasswordSetupToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,16 +24,16 @@ public class TokenDefinicaoSenha {
     private String token;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id", nullable = false)
-    private User usuario;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    @Column(name = "data_expiracao", nullable = false)
-    private LocalDateTime dataExpiracao;
+    @Column(name = "expiration_date", nullable = false)
+    private LocalDateTime expirationDate;
 
     @Column(nullable = false)
-    private boolean usado = false;
+    private boolean used = false;
 
-    public TokenDefinicaoSenha() {
+    public PasswordSetupToken() {
     }
 
 	public Long getId() {
@@ -52,28 +52,28 @@ public class TokenDefinicaoSenha {
 		this.token = token;
 	}
 
-	public User getUsuario() {
-		return usuario;
+	public User getUser() {
+		return user;
 	}
 
-	public void setUsuario(User usuario) {
-		this.usuario = usuario;
+	public void setUser(User user) {
+		this.user = user;
 	}
 
-	public LocalDateTime getDataExpiracao() {
-		return dataExpiracao;
+	public LocalDateTime getExpirationDate() {
+		return expirationDate;
 	}
 
-	public void setDataExpiracao(LocalDateTime dataExpiracao) {
-		this.dataExpiracao = dataExpiracao;
+	public void setExpirationDate(LocalDateTime expirationDate) {
+		this.expirationDate = expirationDate;
 	}
 
-	public boolean isUsado() {
-		return usado;
+	public boolean isUsed() {
+		return used;
 	}
 
-	public void setUsado(boolean usado) {
-		this.usado = usado;
+	public void setUsed(boolean used) {
+		this.used = used;
 	}
 
     
