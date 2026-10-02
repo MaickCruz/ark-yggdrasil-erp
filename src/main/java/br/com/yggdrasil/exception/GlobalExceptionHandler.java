@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,39 +16,113 @@ import br.com.yggdrasil.dto.ErrorResponseDTO;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-	// TODO:
-	// Implementar uma exceção mãe (NaoEncontradoException) para reduzir a reutilização de código das exceções que se repetem.
-	
-    @ExceptionHandler(ProdutoNaoEncontradoException.class)
-    public ResponseEntity<ErrorResponseDTO> handleProdutoNaoEncontrado(ProdutoNaoEncontradoException e) {
+    // TODO:
+    // Create a base NotFoundException to reduce duplicated exception handling code.
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleProductNotFound(
+            ProductNotFoundException e) {
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponseDTO(HttpStatus.NOT_FOUND.value(), e.getMessage()));
+                .body(new ErrorResponseDTO(
+                        HttpStatus.NOT_FOUND.value(),
+                        e.getMessage()
+                ));
     }
 
-    @ExceptionHandler(UsuarioNaoEncontradoException.class)
-    public ResponseEntity<ErrorResponseDTO> handleUsuarioNaoEncontrado(UsuarioNaoEncontradoException e) {
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleUserNotFound(
+            UserNotFoundException e) {
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponseDTO(HttpStatus.NOT_FOUND.value(), e.getMessage()));
+                .body(new ErrorResponseDTO(
+                        HttpStatus.NOT_FOUND.value(),
+                        e.getMessage()
+                ));
     }
 
-    @ExceptionHandler(VendaNaoEncontradaException.class)
-    public ResponseEntity<ErrorResponseDTO> handleVendaNaoEncontrada(VendaNaoEncontradaException e) {
+    @ExceptionHandler(SaleNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleSaleNotFound(
+            SaleNotFoundException e) {
+
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponseDTO(HttpStatus.NOT_FOUND.value(), e.getMessage()));
+                .body(new ErrorResponseDTO(
+                        HttpStatus.NOT_FOUND.value(),
+                        e.getMessage()
+                ));
     }
 
-    @ExceptionHandler(EstoqueInsuficienteException.class)
-    public ResponseEntity<ErrorResponseDTO> handleEstoqueInsuficiente(EstoqueInsuficienteException e) {
+    @ExceptionHandler(InsufficientStockException.class)
+    public ResponseEntity<ErrorResponseDTO> handleInsufficientStock(
+            InsufficientStockException e) {
+
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ErrorResponseDTO(HttpStatus.CONFLICT.value(), e.getMessage()));
+                .body(new ErrorResponseDTO(
+                        HttpStatus.CONFLICT.value(),
+                        e.getMessage()
+                ));
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResponseDTO> handleInvalidCredentials(
+            InvalidCredentialsException e) {
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ErrorResponseDTO(
+                        HttpStatus.UNAUTHORIZED.value(),
+                        e.getMessage()
+                ));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponseDTO> handleAccessDenied(
+            AccessDeniedException e) {
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponseDTO(
+                        HttpStatus.FORBIDDEN.value(),
+                        "You do not have permission to perform this action."
+                ));
+    }
+
+    @ExceptionHandler(InvalidOrExpiredTokenException.class)
+    public ResponseEntity<ErrorResponseDTO> handleInvalidOrExpiredToken(
+            InvalidOrExpiredTokenException e) {
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponseDTO(
+                        HttpStatus.BAD_REQUEST.value(),
+                        e.getMessage()
+                ));
+    }
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<Map<String, String>> handleEmailAlreadyExists(
+            EmailAlreadyExistsException e) {
+
+        Map<String, String> error = new HashMap<>();
+        error.put("message", e.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(error);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationErrors(MethodArgumentNotValidException e) {
-        Map<String, String> erros = new HashMap<>();
-        for (FieldError erro : e.getBindingResult().getFieldErrors()) {
-            erros.put(erro.getField(), erro.getDefaultMessage());
+    public ResponseEntity<Map<String, String>> handleValidationErrors(
+            MethodArgumentNotValidException e) {
+
+        Map<String, String> errors = new HashMap<>();
+
+        for (FieldError fieldError : e.getBindingResult().getFieldErrors()) {
+            errors.put(
+                    fieldError.getField(),
+                    fieldError.getDefaultMessage()
+            );
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erros);
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(errors);
     }
 }
