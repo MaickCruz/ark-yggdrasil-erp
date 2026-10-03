@@ -1,15 +1,16 @@
 package br.com.yggdrasil.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import br.com.yggdrasil.dto.UserCreateRequestDTO;
 import br.com.yggdrasil.dto.UserResponseDTO;
 import br.com.yggdrasil.dto.UserUpdateRequestDTO;
-import br.com.yggdrasil.exception.InvalidCredentialsException;
 import br.com.yggdrasil.exception.EmailAlreadyExistsException;
 import br.com.yggdrasil.exception.InvalidOrExpiredTokenException;
 import br.com.yggdrasil.exception.UserNotFoundException;
@@ -17,6 +18,7 @@ import br.com.yggdrasil.model.entity.PasswordSetupToken;
 import br.com.yggdrasil.model.entity.User;
 import br.com.yggdrasil.repository.PasswordSetupTokenRepository;
 import br.com.yggdrasil.repository.UserRepository;
+import jakarta.transaction.Transactional;
 
 @Service
 public class UserService {
@@ -38,27 +40,37 @@ public class UserService {
         this.emailService = emailService;
     }
     
-    @Value("${app.base-url}")
-    private String baseUrl;
+    @Value("${app.frontend-url}")
+    private String frontendUrl;
 
-    public User createUser(User user) {
+    public UserResponseDTO createUser(UserCreateRequestDTO dto) {
 
-        if (userRepository.existsByEmail(user.getEmail())) {
-            throw new EmailAlreadyExistsException(user.getEmail());
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new EmailAlreadyExistsException(dto.getEmail());
         }
 
-        String temporaryPassword = UUID.randomUUID().toString();
+        User user = new User();
 
-        user.setPassword(passwordEncoder.encode(temporaryPassword));
+        user.setName(dto.getName());
+        user.setEmail(dto.getEmail());
+        user.setRole(dto.getRole());
+
+        String unusablePassword = UUID.randomUUID().toString();
+
+        user.setPassword(
+                passwordEncoder.encode(unusablePassword)
+        );
 
         User savedUser = userRepository.save(user);
 
-        generatePasswordSetupToken(savedUser);
+        sendPasswordSetupEmail(savedUser);
 
-        return savedUser;
+        return new UserResponseDTO(savedUser);
     }
 
-    private void generatePasswordSetupToken(User user) {
+    private void sendPasswordSetupEmail(User user) {
+
+        invalidatePreviousPasswordTokens(user);
 
         String token = UUID.randomUUID().toString();
 
@@ -66,12 +78,14 @@ public class UserService {
 
         tokenEntity.setToken(token);
         tokenEntity.setUser(user);
-        tokenEntity.setExpirationDate(LocalDateTime.now().plusHours(24));
+        tokenEntity.setExpirationDate(
+                LocalDateTime.now().plusHours(24)
+        );
 
         tokenRepository.save(tokenEntity);
 
         String setupPasswordUrl =
-                baseUrl + "/auth/set-password?token=" + token;
+                frontendUrl + "/set-password?token=" + token;
 
         emailService.sendPasswordSetupEmail(
                 user.getEmail(),
@@ -80,6 +94,7 @@ public class UserService {
         );
     }
 
+    @Transactional
     public void setPassword(String token, String newPassword) {
 
         PasswordSetupToken tokenEntity = tokenRepository.findByToken(token)
@@ -99,6 +114,16 @@ public class UserService {
 
         tokenEntity.setUsed(true);
         tokenRepository.save(tokenEntity);
+    }
+    
+    private void invalidatePreviousPasswordTokens(User user) {
+
+        List<PasswordSetupToken> tokens =
+                tokenRepository.findAllByUserAndUsedFalse(user);
+
+        tokens.forEach(token -> token.setUsed(true));
+
+        tokenRepository.saveAll(tokens);
     }
 
     public User getUserById(Long id) {
@@ -122,28 +147,15 @@ public class UserService {
 
         return new UserResponseDTO(savedUser);
     }
-
-    // TODO: Review whether this operation should use the authenticated user's ID
-    // instead of the ID from the URL if salespeople are allowed to change
-    // their own passwords in the future.
-    public void changePassword(
-            Long id,
-            String currentPassword,
-            String newPassword) {
+    
+    public void requestPasswordReset(Long id) {
 
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
 
-        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
-            throw new InvalidCredentialsException();
-        }
-
-        user.setPassword(passwordEncoder.encode(newPassword));
-
-        userRepository.save(user);
+        sendPasswordSetupEmail(user);
     }
 
-    
     
     public void deleteUserById(Long id) {
 

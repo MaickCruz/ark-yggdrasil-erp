@@ -12,10 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.yggdrasil.dto.ChangePasswordRequestDTO;
+import br.com.yggdrasil.dto.UserCreateRequestDTO;
 import br.com.yggdrasil.dto.UserResponseDTO;
 import br.com.yggdrasil.dto.UserUpdateRequestDTO;
-import br.com.yggdrasil.model.entity.User;
 import br.com.yggdrasil.service.UserService;
 import jakarta.validation.Valid;
 
@@ -31,12 +30,11 @@ public class UserController {
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping
-	public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody User user) {
+	public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserCreateRequestDTO dto) {
 
-		User savedUser = userService.createUser(user);
-		UserResponseDTO dto = new UserResponseDTO(savedUser);
-
-		return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+	    UserResponseDTO response = userService.createUser(dto);
+	    
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
@@ -58,17 +56,16 @@ public class UserController {
 	    return ResponseEntity.ok(response);
 	}
 
-	 // TODO: Review whether this endpoint should use the authenticated user's ID
-    // instead of the ID from the URL if salespeople are allowed to change
-    // their own passwords in the future.
-	
 	@PreAuthorize("hasRole('ADMIN')")
-	@PutMapping("/{id}/password")
-	public ResponseEntity<Void> changePassword(@PathVariable Long id, @Valid @RequestBody ChangePasswordRequestDTO dto) {
-		userService.changePassword(id, dto.getCurrentPassword(), dto.getNewPassword());
-		return ResponseEntity.noContent().build();
-	}
+	@PostMapping("/{id}/password-reset")
+	public ResponseEntity<Void> requestPasswordReset(
+	        @PathVariable Long id) {
 
+	    userService.requestPasswordReset(id);
+
+	    return ResponseEntity.noContent().build();
+	}
+	
 	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteUserById(@PathVariable Long id) {
